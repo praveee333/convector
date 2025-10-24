@@ -18,9 +18,26 @@ function initScrollAnimations() {
     function checkScroll() {
         fadeElements.forEach(element => {
             if (isInViewport(element)) {
-                element.classList.add('visible');
+                // Check for different animation types
+                if (element.classList.contains('zoom-in')) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'scale(1)';
+                } else if (element.classList.contains('slide-in-left')) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateX(0)';
+                } else if (element.classList.contains('slide-in-right')) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateX(0)';
+                } else {
+                    element.classList.add('visible');
+                }
             }
         });
+        
+        // Handle animated icons
+        handleAnimatedIcons();
+        // Handle process steps
+        handleProcessSteps();
     }
     
     // Initial check
@@ -34,6 +51,11 @@ function initScrollAnimations() {
     
     // Counter animation for stats
     initStatsAnimation();
+    
+    // Handle animated icons
+    handleAnimatedIcons();
+    // Handle process steps
+    handleProcessSteps();
 }
 
 // Initialize stats animation
@@ -91,9 +113,73 @@ function initStatsAnimation() {
     window.addEventListener('scroll', checkStats);
 }
 
+// Handle animated icons that move from right to left with rotation and scaling
+function handleAnimatedIcons() {
+    const animatedIcons = document.querySelectorAll('.animated-icon');
+    if (!animatedIcons.length) return;
+    
+    let animated = false;
+    
+    function checkIconsScroll() {
+        if (animated) return;
+        
+        const section = document.querySelector('.animated-icons-section');
+        if (!section) return;
+        
+        const rect = section.getBoundingClientRect();
+        const isVisible = rect.top <= window.innerHeight * 0.8 && rect.bottom >= 0;
+        
+        if (isVisible) {
+            animatedIcons.forEach((icon, index) => {
+                setTimeout(() => {
+                    icon.classList.add('visible');
+                }, index * 300); // Stagger the animation
+            });
+            animated = true;
+        }
+    }
+    
+    // Initial check and scroll listener for icons
+    checkIconsScroll();
+    window.addEventListener('scroll', checkIconsScroll);
+}
+
+// Handle process steps animations
+function handleProcessSteps() {
+    const processSteps = document.querySelectorAll('.process-step');
+    if (!processSteps.length) return;
+    
+    let animated = false;
+    
+    function checkStepsScroll() {
+        if (animated) return;
+        
+        const section = document.querySelector('.process');
+        if (!section) return;
+        
+        const rect = section.getBoundingClientRect();
+        const isVisible = rect.top <= window.innerHeight * 0.8 && rect.bottom >= 0;
+        
+        if (isVisible) {
+            processSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    step.classList.add('visible');
+                }, index * 200); // Stagger the animation
+            });
+            animated = true;
+        }
+    }
+    
+    // Initial check and scroll listener for steps
+    checkStepsScroll();
+    window.addEventListener('scroll', checkStepsScroll);
+}
+
 // Initialize animations when DOM is loaded
 document.addEventListener('DOMContentLoaded', initScrollAnimations);
 
 // Export for router access
 window.initScrollAnimations = initScrollAnimations;
 window.initStatsAnimation = initStatsAnimation;
+window.handleAnimatedIcons = handleAnimatedIcons;
+window.handleProcessSteps = handleProcessSteps;
