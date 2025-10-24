@@ -256,6 +256,18 @@ def init_db():
             )
         """)
         
+        # Create password reset tokens table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                token VARCHAR(255) NOT NULL,
+                expires_at TIMESTAMP NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        """)
+        
         # Create indexes (ignore if they already exist)
         index_queries = [
             "CREATE INDEX idx_users_email ON users(email)",
@@ -270,7 +282,9 @@ def init_db():
             "CREATE INDEX idx_whatsapp_user_id ON whatsapp_history(user_id)",
             "CREATE INDEX idx_whatsapp_sent_at ON whatsapp_history(sent_at)",
             "CREATE INDEX idx_email_user_id ON email_history(user_id)",
-            "CREATE INDEX idx_email_sent_at ON email_history(sent_at)"
+            "CREATE INDEX idx_email_sent_at ON email_history(sent_at)",
+            "CREATE INDEX idx_reset_tokens_token ON password_reset_tokens(token)",
+            "CREATE INDEX idx_reset_tokens_expires ON password_reset_tokens(expires_at)"
         ]
         
         for query in index_queries:
@@ -1505,6 +1519,157 @@ def login_post():
     except Error as e:
         print(f"Error during login: {e}")
         return redirect(url_for('login', error='Login failed due to server error'))
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+@app.route('/forgot-password')
+def forgot_password():
+    return render_template('forgot_password.html')
+
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password_post():
+    email = request.form.get('email')
+    
+    # Check if user exists in database
+    connection = get_db_connection()
+    if connection is None:
+        return redirect(url_for('forgot_password', error='Database connection failed'))
+    
+    cursor = None
+    try:
+        cursor = connection.cursor()
+        cursor.execute("SELECT id, name, email FROM users WHERE email = %s", (email,))
+        user_row = cursor.fetchone()
+        
+        if user_row is not None:
+            # User exists, generate reset token
+            user_id = user_row[0]
+            user_name = user_row[1]
+            user_email = user_row[2]
+            
+            # Generate a random token
+            import secrets
+            token = secrets.token_urlsafe(32)
+            
+            # Set expiration time (10 minutes from now)
+            from datetime import datetime, timedelta
+            expires_at = datetime.now() + timedelta(minutes=10)
+            
+            # Store token in database
+            cursor.execute("""
+                INSERT INTO password_reset_tokens (user_id, token, expires_at) 
+                VALUES (%s, %s, %s)
+            """, (user_id, token, expires_at))
+            connection.commit()
+            
+            # Send email with reset link
+            reset_link = f"{request.url_root}reset-password/{token}"
+            subject = "Password Reset Request"
+            body = f"""Hello {user_name},
+
+You have requested to reset your password. Please use the following code to reset your password:
+
+{token}
+
+This code will expire in 10 minutes.
+
+If you did not request this, please ignore this email.
+
+Best regards,
+E-Faws Tech Services"""
+            
+            if send_email(user_email, subject, body):
+                return redirect(url_for('forgot_password', success='Password reset code sent to your email'))
+            else:
+                return redirect(url_for('forgot_password', error='Failed to send email'))
+        else:
+            # Don't reveal if email exists or not for security
+            return redirect(url_for('forgot_password', success='If the email exists, a reset code has been sent'))
+    except Error as e:
+        print(f"Error during password reset request: {e}")
+        return redirect(url_for('forgot_password', error='Password reset request failed'))
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+@app.route('/reset-password/<token>')
+def reset_password(token):
+    # Check if token is valid and not expired
+    connection = get_db_connection()
+    if connection is None:
+        return redirect(url_for('login', error='Database connection failed'))
+    
+    cursor = None
+    try:
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT user_id, expires_at FROM password_reset_tokens 
+            WHERE token = %s AND expires_at > NOW()
+        """, (token,))
+        token_row = cursor.fetchone()
+        
+        if token_row is None:
+            return render_template('reset_password.html', error='Invalid or expired token')
+        
+        # Token is valid, show reset password form
+        return render_template('reset_password.html', token=token)
+    except Error as e:
+        print(f"Error validating reset token: {e}")
+        return redirect(url_for('login', error='Password reset failed'))
+    finally:
+        if cursor:
+            cursor.close()
+        if connection and connection.is_connected():
+            connection.close()
+
+@app.route('/reset-password/<token>', methods=['POST'])
+def reset_password_post(token):
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
+    
+    # Check if passwords match
+    if password != confirm_password:
+        return render_template('reset_password.html', token=token, error='Passwords do not match')
+    
+    # Check if token is valid and not expired
+    connection = get_db_connection()
+    if connection is None:
+        return redirect(url_for('login', error='Database connection failed'))
+    
+    cursor = None
+    try:
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT user_id FROM password_reset_tokens 
+            WHERE token = %s AND expires_at > NOW()
+        """, (token,))
+        token_row = cursor.fetchone()
+        
+        if token_row is None:
+            return render_template('reset_password.html', error='Invalid or expired token')
+        
+        user_id = token_row[0]
+        
+        # Hash the new password
+        hashed_password = hash_password(password)
+        
+        # Update user's password
+        cursor.execute("UPDATE users SET password = %s WHERE id = %s", (hashed_password, user_id))
+        
+        # Delete the used token
+        cursor.execute("DELETE FROM password_reset_tokens WHERE token = %s", (token,))
+        
+        connection.commit()
+        
+        return redirect(url_for('login', success='Password successfully reset. You can now log in with your new password.'))
+    except Error as e:
+        print(f"Error resetting password: {e}")
+        return render_template('reset_password.html', token=token, error='Failed to reset password')
     finally:
         if cursor:
             cursor.close()
