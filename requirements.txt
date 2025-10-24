@@ -9,5 +9,5 @@ numpy==1.24.3
 mysql-connector-python==8.0.33
 razorpay==2.0.0
 flask-cors==6.0.1
-alembic==1.10.x   # optional for migrations
+alembic
 gunicorn
