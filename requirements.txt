@@ -1,11 +1,11 @@
 Flask==2.3.2
 PyPDF2==3.0.1
 openpyxl==3.1.2
-pandas==2.0.3
+pandas==1.5.3
 python-docx==0.8.11
-Pillow==10.3.0
+Pillow==10.0.0
 pytesseract==0.3.10
-numpy==1.26.4
+numpy==1.24.3
 mysql-connector-python==8.0.33
 razorpay==2.0.0
 flask-cors==6.0.1
