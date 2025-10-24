@@ -2207,7 +2207,7 @@ def get_analysis_data(analysis_id):
             connection.close()
 
 
-@app.route('/api/analysis-transactions/<int:analysis_id>/<category>')
+@app.route('/api/analysis-transactions/<int:analysis_id>/<path:category>')
 def get_analysis_transactions(analysis_id, category):
     if not is_logged_in():
         return jsonify({'success': False, 'error': 'Unauthorized'}), 401
@@ -2244,14 +2244,23 @@ def get_analysis_transactions(analysis_id, category):
                 sanitized_category = decoded_category.replace('/', ' ').replace('\\', ' ').replace('?', ' ').replace('*', ' ').replace('[', ' ').replace(']', ' ').replace(':', ' ')
                 sheet_name = sanitized_category[:31]
                 
+                # Debug logging
+                print(f"Looking for category: {decoded_category}")
+                print(f"Sanitized sheet name: {sheet_name}")
+                
                 # Try to read the category details sheet
                 try:
-                    transactions_df = pd.read_excel(excel_file_path, sheet_name=f"{sheet_name} Details")
-                except:
+                    sheet_name_with_details = f"{sheet_name} Details"
+                    print(f"Trying to read sheet: {sheet_name_with_details}")
+                    transactions_df = pd.read_excel(excel_file_path, sheet_name=sheet_name_with_details)
+                except Exception as e1:
+                    print(f"Failed to read '{sheet_name} Details' sheet: {e1}")
                     # If category details sheet doesn't exist, try the main category sheet
                     try:
+                        print(f"Trying to read sheet: {decoded_category}")
                         transactions_df = pd.read_excel(excel_file_path, sheet_name=decoded_category)
-                    except:
+                    except Exception as e2:
+                        print(f"Failed to read '{decoded_category}' sheet: {e2}")
                         # If neither sheet exists, return empty data
                         return jsonify({
                             'success': True,
@@ -2281,12 +2290,12 @@ def get_analysis_transactions(analysis_id, category):
                 print(f"Error reading Excel file: {e}")
                 import traceback
                 traceback.print_exc()
-                return jsonify({'success': False, 'error': 'Failed to read transaction data'}), 500
+                return jsonify({'success': False, 'error': f'Failed to read transaction data: {str(e)}'}), 500
         else:
             return jsonify({'success': False, 'error': 'Analysis not found'}), 404
     except Error as e:
         print(f"Error retrieving analysis: {e}")
-        return jsonify({'success': False, 'error': 'Database error'}), 500
+        return jsonify({'success': False, 'error': f'Database error: {str(e)}'}), 500
     finally:
         if cursor:
             cursor.close()
