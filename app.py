@@ -155,6 +155,24 @@ def init_db():
             if e.errno != 1060:  # 1060 = Duplicate column name
                 print(f"Note: {e}")
         
+        # Check if is_demo column exists, if not add it
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN is_demo BOOLEAN DEFAULT FALSE")
+            print("Added is_demo column to users table")
+        except Error as e:
+            # Column already exists or other error, continue
+            if e.errno != 1060:  # 1060 = Duplicate column name
+                print(f"Note: {e}")
+        
+        # Check if demo_expiry_date column exists, if not add it
+        try:
+            cursor.execute("ALTER TABLE users ADD COLUMN demo_expiry_date TIMESTAMP NULL")
+            print("Added demo_expiry_date column to users table")
+        except Error as e:
+            # Column already exists or other error, continue
+            if e.errno != 1060:  # 1060 = Duplicate column name
+                print(f"Note: {e}")
+        
         # Create subscriptions table
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS subscriptions (
