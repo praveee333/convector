@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">Bank Statement Analysis History</h2>
+        <p class="section-subtitle">View and manage your previous bank statement analyses</p>
+        
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <h3>Filter Analyses</h3>
+            <form id="filterForm" method="GET" action="{{ url_for('bank_statement_history') }}">
+                <div class="filter-group">
+                    <label for="filterDate">Filter by Date:</label>
+                    <input type="date" id="filterDate" name="date" value="{{ filter_date or '' }}">
+                </div>
+                <div class="filter-group">
+                    <label for="filterDay">Filter by Day:</label>
+                    <select id="filterDay" name="day">
+                        <option value="">All Days</option>
+                        <option value="Monday" {% if filter_day == 'Monday' %}selected{% endif %}>Monday</option>
+                        <option value="Tuesday" {% if filter_day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                        <option value="Wednesday" {% if filter_day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                        <option value="Thursday" {% if filter_day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                        <option value="Friday" {% if filter_day == 'Friday' %}selected{% endif %}>Friday</option>
+                        <option value="Saturday" {% if filter_day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                        <option value="Sunday" {% if filter_day == 'Sunday' %}selected{% endif %}>Sunday</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-filter">Apply Filters</button>
+                    <a href="{{ url_for('bank_statement_history') }}" class="btn btn-clear">Clear Filters</a>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Analysis Count -->
+        <div class="analysis-count">
+            <p>Total Analyses: <strong>{{ analyses|length }}</strong></p>
+        </div>
+        
+        {% if analyses %}
+        <div class="history-table-container">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Bank Name</th>
+                        <th>Customer Number</th>
+                        <th>Analysis Date</th>
+                        <th>Day</th>
+                        <th>File Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for analysis in analyses %}
+                    <tr>
+                        <td>{{ analysis.name }}</td>
+                        <td>{{ analysis.bank_name }}</td>
+                        <td>{{ analysis.customer_number }}</td>
+                        <td>{{ analysis.analysis_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ analysis.analysis_date.strftime('%A') }}</td>
+                        <td>{{ analysis.file_name }}</td>
+                        <td class="actions">
+                            <a href="{{ url_for('analysis_details', analysis_id=analysis.id) }}" style="background-color: #580b5b;" class="btn btn-small btn-info">
+                                <i class="fas fa-chart-bar"></i> Details
+                            </a>
+                            <a href="{{ url_for('download_excel', analysis_id=analysis.id) }}" style="background-color: green;" class="btn btn-small btn-success">
+                                <i class="fas fa-download"></i> Excel
+                            </a>
+                            <button style="background-color: rebeccapurple;" class="btn btn-small btn-danger" onclick="deleteAnalysis({{ analysis.id }})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-history">
+            <i class="fas fa-history fa-3x"></i>
+            <h3>No Analysis History</h3>
+            <p>You haven't performed any bank statement analyses yet.</p>
+            <a href="{{ url_for('bank_statement_analyzer') }}" class="btn">Analyze Statement Now</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.history-table-container {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: auto;
+    margin-top: 30px;
+    max-height: 70vh;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table thead {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.history-table th {
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.history-table tbody tr {
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.history-table tbody tr:nth-child(even) {
+    background: var(--lighter);
+}
+
+.history-table tbody tr:hover {
+    background: rgba(92, 6, 120, 0.05);
+}
+
+.history-table td {
+    padding: 15px 20px;
+    vertical-align: middle;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    border-radius: var(--border-radius);
+}
+
+.btn-success {
+    background: var(--success);
+    color: var(--white);
+    border: none;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+}
+
+.no-history {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-top: 30px;
+}
+
+.no-history i {
+    color: var(--gray);
+    margin-bottom: 20px;
+}
+
+.no-history h3 {
+    margin-bottom: 15px;
+    color: var(--dark);
+}
+
+.no-history p {
+    color: var(--gray);
+    margin-bottom: 30px;
+}
+
+/* Filter Section Styles */
+.filter-section {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.filter-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--dark);
+}
+
+.filter-group {
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 15px;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 8px 12px;
+    border: 2px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.filter-actions {
+    margin-top: 15px;
+}
+
+.btn-filter {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.btn-clear {
+    background: var(--gray-light);
+    color: var(--dark);
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-filter:hover,
+.btn-clear:hover {
+    opacity: 0.9;
+}
+
+/* Analysis Count Styles */
+.analysis-count {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.analysis-count p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--dark);
+}
+
+.analysis-count strong {
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+@media (max-width: 768px) {
+    .history-table-container {
+        overflow-x: auto;
+    }
+    
+    .history-table {
+        min-width: 600px;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .btn-small {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .filter-group {
+        display: block;
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .filter-actions {
+        text-align: center;
+    }
+    
+    .btn-filter,
+    .btn-clear {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+}
+
+/* Always show scrollbars for better UX */
+.history-table-container::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.history-table-container::-webkit-scrollbar:vertical {
+    width: 11px;
+}
+
+.history-table-container::-webkit-scrollbar:horizontal {
+    height: 11px;
+}
+
+.history-table-container::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    background-color: rgba(0, 0, 0, .3);
+}
+</style>
+
+<script>
+function deleteAnalysis(analysisId) {
+    if (confirm('Are you sure you want to delete this analysis? This action cannot be undone.')) {
+        fetch(`/delete-analysis/${analysisId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Analysis deleted successfully');
+                location.reload();
+            } else {
+                alert('Failed to delete analysis: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the analysis');
+        });
+    }
+}
+</script>
+{% endblock %}

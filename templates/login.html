@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Welcome</h2>
+            <p>Sign in or create account</p>
+        </div>
+        
+        <div class="login-tabs">
+            <button class="tab-btn active" onclick="showTab('login')">Login</button>
+            <button class="tab-btn" onclick="showTab('register')">Register</button>
+        </div>
+        
+        <!-- Login Form -->
+        <form id="loginForm" class="login-form active" action="/login" method="POST">
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" name="email" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="password" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Login</button>
+            
+            <div class="form-footer">
+                <a href="#" onclick="showTab('register')">Don't have an account? Register</a>
+            </div>
+        </form>
+        
+        <!-- Registration Form -->
+        <form id="registerForm" class="login-form" action="/register" method="POST">
+            <div class="form-group">
+                <label for="registerCompanyName">Company Name</label>
+                <input type="text" id="registerCompanyName" name="name" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPhone">Phone Number</label>
+                <input type="tel" id="registerPhone" name="phone" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" name="email" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" name="password" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="registerConfirmPassword">Confirm Password</label>
+                <input type="password" id="registerConfirmPassword" name="confirm_password" class="form-input" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Register</button>
+            
+            <div class="form-footer">
+                <a href="#" onclick="showTab('login')">Already have an account? Login</a>
+            </div>
+        </form>
+        
+       
+    </div>
+</div>
+
+<style>
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 15px; /* Reduced padding */
+}
+
+.login-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 350px; /* Further reduced container size */
+    padding: 25px; /* Reduced padding */
+    position: relative;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 20px; /* Reduced margin */
+}
+
+.login-header h2 {
+    font-size: 1.4rem; /* Reduced header size */
+    margin-bottom: 8px; /* Reduced margin */
+    color: var(--dark);
+}
+
+.login-header p {
+    color: var(--gray);
+    font-size: 0.9rem; /* Reduced font size */
+}
+
+.login-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--gray-light);
+    margin-bottom: 20px; /* Reduced margin */
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px; /* Reduced padding */
+    background: none;
+    border: none;
+    font-weight: 600;
+    color: var(--gray);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    font-size: 0.9rem; /* Reduced font size */
+}
+
+.tab-btn.active {
+    color: var(--primary);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 3px 3px 0 0;
+}
+
+.login-form {
+    display: none;
+}
+
+.login-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 15px; /* Reduced margin */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px; /* Reduced margin */
+    font-weight: 500;
+    color: var(--dark);
+    font-size: 0.85rem; /* Reduced font size */
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 12px; /* Reduced padding */
+    border: 2px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 0.9rem; /* Reduced font size */
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 10px; /* Reduced padding */
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 0.95rem; /* Reduced font size */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px; /* Reduced margin */
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 15px; /* Reduced margin */
+}
+
+.form-footer a {
+    color: var(--primary);
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 0.85rem; /* Reduced font size */
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Admin Login Section */
+.admin-login-section {
+    margin-top: 20px; /* Reduced margin */
+    padding-top: 12px; /* Reduced padding */
+    border-top: 1px solid var(--gray-light);
+}
+
+.admin-login-section h3 {
+    font-size: 1rem; /* Reduced font size */
+    color: var(--dark);
+    margin-bottom: 6px; /* Reduced margin */
+}
+
+.admin-login-section p {
+    color: var(--gray);
+    font-size: 0.8rem; /* Reduced font size */
+    margin-bottom: 10px; /* Reduced margin */
+}
+
+.admin-credentials {
+    background-color: #f8f9fa;
+    padding: 10px; /* Reduced padding */
+    border-radius: var(--border-radius);
+    font-size: 0.8rem; /* Reduced font size */
+}
+
+.admin-credentials p {
+    margin: 3px 0; /* Reduced margin */
+}
+
+/* Alerts */
+.alert {
+    padding: 10px; /* Reduced padding */
+    border-radius: var(--border-radius);
+    margin-bottom: 15px; /* Reduced margin */
+    display: none;
+    font-size: 0.85rem; /* Reduced font size */
+}
+
+.alert-success {
+    background-color: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #059669;
+}
+
+.alert-error {
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 10px; /* Further reduced padding */
+    }
+    
+    .login-card {
+        padding: 20px 15px; /* Reduced padding */
+        max-width: 90%; /* More mobile-friendly width */
+        margin: 5px; /* Reduced margin */
+    }
+    
+    .login-header h2 {
+        font-size: 1.3rem; /* Reduced font size */
+    }
+    
+    .login-header p {
+        font-size: 0.85rem; /* Reduced font size */
+    }
+    
+    .tab-btn {
+        padding: 8px; /* Reduced padding */
+        font-size: 0.85rem; /* Reduced font size */
+    }
+    
+    .form-group label {
+        font-size: 0.8rem; /* Reduced font size */
+    }
+    
+    .form-input {
+        padding: 8px 10px; /* Reduced padding */
+        font-size: 0.85rem; /* Reduced font size */
+    }
+    
+    .btn-primary {
+        padding: 8px; /* Reduced padding */
+        font-size: 0.9rem; /* Reduced font size */
+    }
+    
+    .form-footer a {
+        font-size: 0.8rem; /* Reduced font size */
+    }
+    
+    .admin-login-section h3 {
+        font-size: 0.9rem; /* Reduced font size */
+    }
+    
+    .admin-login-section p {
+        font-size: 0.75rem; /* Reduced font size */
+    }
+    
+    .admin-credentials {
+        padding: 8px; /* Reduced padding */
+        font-size: 0.75rem; /* Reduced font size */
+    }
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 15px 12px; /* Further reduced padding */
+        max-width: 95%; /* Better mobile fit */
+    }
+    
+    .login-header h2 {
+        font-size: 1.2rem; /* Further reduced font size */
+    }
+    
+    .login-header p {
+        font-size: 0.8rem; /* Further reduced font size */
+    }
+    
+    .tab-btn {
+        padding: 6px; /* Further reduced padding */
+        font-size: 0.8rem; /* Further reduced font size */
+    }
+    
+    .form-group {
+        margin-bottom: 12px; /* Further reduced margin */
+    }
+    
+    .form-group label {
+        font-size: 0.75rem; /* Further reduced font size */
+    }
+    
+    .form-input {
+        padding: 6px 8px; /* Further reduced padding */
+        font-size: 0.8rem; /* Further reduced font size */
+    }
+    
+    .btn-primary {
+        padding: 6px; /* Further reduced padding */
+        font-size: 0.85rem; /* Further reduced font size */
+    }
+    
+    .form-footer {
+        margin-top: 12px; /* Further reduced margin */
+    }
+    
+    .form-footer a {
+        font-size: 0.75rem; /* Further reduced font size */
+    }
+    
+    .alert {
+        padding: 8px; /* Further reduced padding */
+        font-size: 0.8rem; /* Further reduced font size */
+    }
+}
+</style>
+
+<script>
+function showTab(tabName) {
+    // Hide all forms
+    document.querySelectorAll('.login-form').forEach(form => {
+        form.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.tab-btn').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected form
+    document.getElementById(tabName + 'Form').classList.add('active');
+    
+    // Add active class to corresponding tab button
+    // Find the tab button by index (0 for Login, 1 for Register)
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    if (tabName === 'login' && tabButtons[0]) {
+        tabButtons[0].classList.add('active');
+    } else if (tabName === 'register' && tabButtons[1]) {
+        tabButtons[1].classList.add('active');
+    }
+    
+    // Update URL hash without reloading the page
+    if (tabName === 'register') {
+        window.location.hash = 'register';
+    } else {
+        // Remove hash when switching to login
+        history.pushState('', document.title, window.location.pathname);
+    }
+}
+
+// Check for alerts in URL parameters
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const error = urlParams.get('error');
+    
+    if (success) {
+        showAlert('success', success);
+    }
+    
+    if (error) {
+        showAlert('error', error);
+    }
+    
+    // Check if URL contains #register hash to show registration form
+    if (window.location.hash === '#register') {
+        console.log('Register hash detected, showing registration form');
+        showTab('register');
+    }
+});
+
+// Also check for hash changes (needed for navigation from other pages)
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#register') {
+        showTab('register');
+    } else {
+        showTab('login');
+    }
+});
+
+function showAlert(type, message) {
+    // Remove existing alerts
+    const existingAlert = document.querySelector('.alert');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    // Create alert element
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    // Insert alert before the login card
+    document.querySelector('.login-card').prepend(alert);
+    alert.style.display = 'flex';
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        alert.style.display = 'none';
+    }, 5000);
+}
+</script>
+{% endblock %}

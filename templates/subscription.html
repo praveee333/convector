@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="subscription-container">
+    {% if expired %}
+    <div class="alert alert-warning" style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin-bottom: 20px; color: #856404;">
+        <strong>Subscription Expired!</strong> Your previous subscription has ended. Please renew your subscription to continue using Bank Statement Analyzer.
+    </div>
+    {% endif %}
+    
+    <div class="subscription-header">
+        <h2>{% if expired %}Renew Your Plan{% else %}Choose Your Plan{% endif %}</h2>
+        <p>{% if expired %}Renew your subscription to continue accessing Bank Statement Analyzer{% else %}Select a subscription plan to access Bank Statement Analyzer{% endif %}</p>
+    </div>
+    
+    <div class="plans-container">
+        <!-- Monthly Plan -->
+        <div class="plan-card">
+            <div class="plan-header">
+                <h3>Monthly Plan</h3>
+                <div class="plan-price">
+                    <span class="amount">₹499</span>
+                    <span class="period">/ month</span>
+                </div>
+            </div>
+            <div class="plan-features">
+                <ul>
+                    <li><i class="fas fa-check"></i> Unlimited bank statement analysis</li>
+                    <li><i class="fas fa-check"></i> Excel report generation</li>
+                    <li><i class="fas fa-check"></i> Categorization of transactions</li>
+                    <li><i class="fas fa-check"></i> Email support</li>
+                </ul>
+            </div>
+            <div class="plan-action">
+                <button class="btn btn-primary" onclick="initiatePayment('monthly')">{% if expired %}Renew Now{% else %}Pay Now{% endif %}</button>
+            </div>
+        </div>
+        
+        <!-- 2-Month Plan -->
+        <div class="plan-card popular">
+            <div class="popular-badge">MOST POPULAR</div>
+            <div class="plan-header">
+                <h3>2-Month Plan</h3>
+                <div class="plan-price">
+                    <span class="amount">₹899</span>
+                    <span class="period">/ 2 months</span>
+                </div>
+                <div class="plan-saving">Save ₹100</div>
+            </div>
+            <div class="plan-features">
+                <ul>
+                    <li><i class="fas fa-check"></i> Unlimited bank statement analysis</li>
+                    <li><i class="fas fa-check"></i> Excel report generation</li>
+                    <li><i class="fas fa-check"></i> Categorization of transactions</li>
+                    <li><i class="fas fa-check"></i> Priority email support</li>
+                    <li><i class="fas fa-check"></i> Advanced analytics</li>
+                </ul>
+            </div>
+            <div class="plan-action">
+                <button class="btn btn-primary" onclick="initiatePayment('two_months')">{% if expired %}Renew Now{% else %}Pay Now{% endif %}</button>
+            </div>
+        </div>
+        
+        <!-- Annual Plan -->
+        <div class="plan-card">
+            <div class="plan-header">
+                <h3>Annual Plan</h3>
+                <div class="plan-price">
+                    <span class="amount">₹4999</span>
+                    <span class="period">/ year</span>
+                </div>
+                <div class="plan-saving">Save ₹989</div>
+            </div>
+            <div class="plan-features">
+                <ul>
+                    <li><i class="fas fa-check"></i> Unlimited bank statement analysis</li>
+                    <li><i class="fas fa-check"></i> Excel report generation</li>
+                    <li><i class="fas fa-check"></i> Categorization of transactions</li>
+                    <li><i class="fas fa-check"></i> 24/7 priority support</li>
+                    <li><i class="fas fa-check"></i> Advanced analytics</li>
+                    <li><i class="fas fa-check"></i> Custom report templates</li>
+                </ul>
+            </div>
+            <div class="plan-action">
+                <button class="btn btn-primary" onclick="initiatePayment('annual')">{% if expired %}Renew Now{% else %}Pay Now{% endif %}</button>
+            </div>
+        </div>
+    </div>
+    
+   
+</div>
+
+<style>
+.subscription-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.subscription-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.subscription-header h2 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    color: var(--dark);
+}
+
+.subscription-header p {
+    font-size: 1.1rem;
+    color: var(--gray);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.plans-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.plan-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 1px solid var(--gray-light);
+}
+
+.plan-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-xl);
+}
+
+.plan-card.popular {
+    border: 2px solid var(--primary);
+    transform: scale(1.05);
+}
+
+.plan-card.popular:hover {
+    transform: scale(1.05) translateY(-10px);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-primary);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.plan-header h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--dark);
+}
+
+.plan-price {
+    margin-bottom: 20px;
+}
+
+.amount {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.period {
+    font-size: 1rem;
+    color: var(--gray);
+}
+
+.plan-saving {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--secondary-dark);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.plan-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.plan-features li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-light);
+    display: flex;
+    align-items: center;
+}
+
+.plan-features li:last-child {
+    border-bottom: none;
+}
+
+.plan-features li i {
+    color: var(--secondary);
+    margin-right: 10px;
+    width: 20px;
+}
+
+.plan-action {
+    margin-top: 20px;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: 15px;
+    background: var(--gray-light);
+    color: var(--dark);
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.btn-secondary:hover {
+    background: var(--gray);
+}
+
+.payment-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.payment-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+.payment-card h3 {
+    margin-bottom: 30px;
+    color: var(--dark);
+}
+
+#razorpay-button-container {
+    margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .plans-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .plan-card.popular {
+        transform: scale(1);
+    }
+    
+    .plan-card.popular:hover {
+        transform: scale(1) translateY(-10px);
+    }
+}
+
+@media (max-width: 768px) {
+    .subscription-container {
+        padding: 20px 15px;
+    }
+    
+    .subscription-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .plans-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .amount {
+        font-size: 2rem;
+    }
+}
+</style>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+// Razorpay options - now using server-side configuration
+let razorpayOptions = {
+    key: '', // Will be populated from server
+    amount: 49900, // Default amount in paise (₹499)
+    currency: 'INR',
+    name: 'Bank Statement Analyzer',
+    description: 'Subscription Payment',
+    image: 'https://cdn.razorpay.com/logos/7E183D8A135804F4E55326AE455FC1A7.png',
+    handler: function (response) {
+        // Handle successful payment
+        verifyPayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, razorpayOptions.notes.plan);
+    },
+    prefill: {
+        name: '',
+        email: '',
+        contact: ''
+    },
+    notes: {
+        plan: 'monthly'
+    },
+    theme: {
+        color: '#5c0678'
+    }
+};
+
+let rzp;
+
+function initiatePayment(plan) {
+    console.log('Initiating payment for plan:', plan);
+    
+    // First, get the Razorpay order from the server
+    const url = '/create-order'; // Use relative URL for same-origin requests
+    console.log('Making request to:', url);
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            plan: plan
+        })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            console.log('Order created successfully. Initializing Razorpay...');
+            // Update Razorpay options with server data
+            razorpayOptions.key = data.key_id || 'rzp_test_1DP5mmOlF5G5ag'; // Fallback to test key
+            razorpayOptions.amount = data.amount;
+            razorpayOptions.order_id = data.order_id;
+            razorpayOptions.notes.plan = plan;
+            
+            // Initialize Razorpay
+            try {
+                rzp = new Razorpay(razorpayOptions);
+                rzp.open();
+                console.log('Razorpay initialized successfully.');
+            } catch (e) {
+                console.error('Error initializing Razorpay:', e);
+                alert('Error initializing payment gateway: ' + e.message);
+            }
+        } else {
+            // Order creation failed
+            console.error('Order creation failed:', data.error);
+            alert('Failed to create payment order: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error in fetch request:', error);
+        alert('An error occurred while processing your payment request: ' + error.message);
+    });
+}
+
+function verifyPayment(payment_id, order_id, signature, plan) {
+    console.log('Verifying payment:', {payment_id, order_id, signature, plan});
+    
+    // Send payment details to server for verification
+    const url = '/verify-payment'; // Use relative URL for same-origin requests
+    console.log('Verifying payment at:', url);
+    
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            payment_id: payment_id,
+            order_id: order_id,
+            signature: signature,
+            plan: plan
+        })
+    })
+    .then(response => {
+        console.log('Verification response status:', response.status);
+        if (!response.ok) {
+            throw new Error('Network response was not ok: ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Verification response data:', data);
+        
+        if (data.success) {
+            console.log('Payment verification successful. Redirecting...');
+            // Payment successful, redirect to dashboard without URL parameters
+            window.location.href = '/bank-statement-analyzer';
+        } else {
+            // Payment failed
+            console.error('Payment verification failed:', data.error);
+            alert('Payment verification failed: ' + (data.error || 'Unknown error'));
+            cancelPayment();
+        }
+    })
+    .catch(error => {
+        console.error('Error in verification request:', error);
+        alert('An error occurred while verifying your payment: ' + error.message);
+        cancelPayment();
+    });
+}
+</script>
+{% endblock %}

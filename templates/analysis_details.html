@@ -1,0 +1,1036 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="section">
+        <h2 class="section-title">Bank Statement Analysis Details</h2>
+        <p class="section-subtitle">Detailed financial insights and analytics</p>
+        
+        <div class="analysis-header">
+            <div class="analysis-info-card">
+                <h3>Analysis Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Name:</label>
+                        <span>{{ analysis.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Bank:</label>
+                        <span>{{ analysis.bank_name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Customer Number:</label>
+                        <span>{{ analysis.customer_number }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Analysis Date:</label>
+                        <span>{{ analysis.analysis_date.strftime('%Y-%m-%d %H:%M') }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>File Name:</label>
+                        <span>{{ analysis.file_name }}</span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <a href="{{ url_for('download_excel', analysis_id=analysis.id) }}" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Download Excel Report
+                    </a>
+                    <a href="{{ url_for('bank_statement_history') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to History
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+.analysis-header {
+    margin-bottom: 30px;
+}
+
+.analysis-info-card {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 25px;
+    border: 1px solid var(--gray-light);
+}
+
+.analysis-info-card h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--dark);
+    font-size: 1.4rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.info-item span {
+    color: var(--gray);
+    font-size: 1rem;
+}
+
+.actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--gray-light);
+    color: var(--dark);
+}
+
+.btn-secondary:hover {
+    background: var(--gray);
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.charts-section {
+    margin-bottom: 40px;
+}
+
+.charts-section h3 {
+    margin-bottom: 25px;
+    color: var(--dark);
+    font-size: 1.5rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.chart-container {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 25px;
+    border: 1px solid var(--gray-light);
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chart-placeholder {
+    text-align: center;
+    color: var(--gray);
+}
+
+.chart-placeholder i {
+    margin-bottom: 15px;
+    color: var(--primary);
+}
+
+.chart-placeholder p {
+    margin: 10px 0;
+}
+
+.chart-placeholder .chart-description {
+    font-size: 0.9rem;
+    color: var(--gray);
+}
+
+.summary-section {
+    margin-bottom: 40px;
+}
+
+.summary-section h3 {
+    margin-bottom: 25px;
+    color: var(--dark);
+    font-size: 1.5rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.metric-card {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 20px;
+    border: 1px solid var(--gray-light);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.metric-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: white;
+}
+
+.metric-icon.income {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.metric-icon.expense {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.metric-icon.net {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.metric-icon.transaction {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.metric-content h4 {
+    margin: 0 0 5px 0;
+    color: var(--dark);
+    font-size: 1.1rem;
+}
+
+.metric-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.metric-description {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.category-section h3 {
+    margin-bottom: 25px;
+    color: var(--dark);
+    font-size: 1.5rem;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.category-card {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 20px;
+    border: 1px solid var(--gray-light);
+    text-align: center;
+}
+
+.category-card h4 {
+    margin: 0 0 10px 0;
+    color: var(--dark);
+    font-size: 1rem;
+}
+
+.category-count {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-bottom: 8px;
+}
+
+.category-amount {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .analysis-info-card {
+        padding: 20px 15px;
+    }
+    
+    .info-item label,
+    .info-item span {
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<!-- Bottom Tabs Section -->
+<div class="bottom-tabs-section">
+    <div class="tabs-container">
+        <div class="tabs-header">
+            <h3>Transaction Categories</h3>
+            <p class="tabs-description">View detailed transactions by category</p>
+        </div>
+        
+        <div class="tabs-wrapper">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-category="Deposits">Deposits</button>
+                <button class="tab-btn" data-category="Withdrawals">Withdrawals</button>
+                <button class="tab-btn" data-category="Loans">Loans</button>
+                <button class="tab-btn" data-category="Interest">Interest</button>
+                <button class="tab-btn" data-category="Fees">Fees</button>
+                <button class="tab-btn" data-category="Transfers">Transfers</button>
+                <button class="tab-btn" data-category="Payments">Payments</button>
+                <button class="tab-btn" data-category="Cash">Cash</button>
+                <button class="tab-btn" data-category="Investments">Investments</button>
+                <button class="tab-btn" data-category="Refunds">Refunds</button>
+                <button class="tab-btn" data-category="Insurance">Insurance</button>
+                <button class="tab-btn" data-category="Taxes">Taxes</button>
+                <button class="tab-btn" data-category="UPI Transfers">UPI Transfers</button>
+                <button class="tab-btn" data-category="ATM Deposits">ATM Deposits</button>
+                <button class="tab-btn" data-category="ATM Withdrawals">ATM Withdrawals</button>
+                <button class="tab-btn" data-category="Utility Bills">Utility Bills</button>
+                <button class="tab-btn" data-category="EMI/Loan Repayments">EMI/Loan Repayments</button>
+                <button class="tab-btn" data-category="NEFT/RTGS">NEFT/RTGS</button>
+                <button class="tab-btn" data-category="Other">Other</button>
+            </div>
+            
+            <div class="tabs-content">
+                <!-- Tab content will be loaded dynamically -->
+                <div class="tab-content active" id="Deposits-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Deposits</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Deposits-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Withdrawals-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Withdrawals</h4>
+                            
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Withdrawals-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Loans-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Loans</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Loans-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Interest-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Interest</h4>
+                            
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Interest-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Fees-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Fees</h4>
+                          
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Fees-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Transfers-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Transfers</h4>
+                          
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Transfers-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Payments-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Payments</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Payments-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Cash-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Cash</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Cash-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Investments-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Investments</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Investments-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Refunds-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Refunds</h4>
+                          
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Refunds-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Insurance-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Insurance</h4>
+                          
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Insurance-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Taxes-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Taxes</h4>
+                          
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Taxes-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="UPI Transfers-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>UPI Transfers</h4>
+                          
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="UPI Transfers-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="ATM Deposits-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>ATM Deposits</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="ATM Deposits-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="ATM Withdrawals-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>ATM Withdrawals</h4>
+                         
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="ATM Withdrawals-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Utility Bills-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Utility Bills</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Utility Bills-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="EMI_Loan_Repayments-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>EMI/Loan Repayments</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="EMI_Loan_Repayments-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="NEFT_RTGS-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>NEFT/RTGS</h4>
+                           
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="NEFT_RTGS-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+                <div class="tab-content" id="Other-content">
+                    <div class="category-summary">
+                        <div class="summary-card">
+                            <h4>Other</h4>
+                            
+                        </div>
+                    </div>
+                    <div class="transactions-container" id="Other-transactions">
+                        <div class="loading">Loading transactions...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    console.log('Found tab buttons:', tabBtns.length);
+    console.log('Found tab contents:', tabContents.length);
+    
+    tabBtns.forEach((btn, index) => {
+        console.log('Attaching event listener to button', index, btn.getAttribute('data-category'));
+        btn.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            
+            console.log('Tab clicked for category:', category);
+            
+            // Remove active class from all buttons and contents
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            
+            // For content divs, we need to match the HTML structure
+            let contentId;
+            if (category === 'EMI/Loan Repayments') {
+                contentId = 'EMI_Loan_Repayments-content';
+            } else if (category === 'NEFT/RTGS') {
+                contentId = 'NEFT_RTGS-content';
+            } else {
+                // For other categories, just append '-content'
+                contentId = category + '-content';
+            }
+            
+            console.log('Content ID for DOM:', contentId);
+            
+            // Add active class to clicked button and corresponding content
+            this.classList.add('active');
+            const contentElement = document.getElementById(contentId);
+            if (contentElement) {
+                contentElement.classList.add('active');
+            }
+            
+            // Load transactions if not already loaded
+            loadCategoryTransactions(category);
+        });
+    });
+    
+    // Load initial category data
+    loadCategoryData();
+    
+    // Load transactions for the initially active tab
+    console.log('Loading initial Deposits category');
+    loadCategoryTransactions('Deposits');
+});
+
+// Load category summary data
+function loadCategoryData() {
+    console.log('Loading category data');
+    fetch(`/api/analysis-data/{{ analysis.id }}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Received category data:', data);
+            if (data.success) {
+                // Update all category summaries
+                const categories = data.categories;
+                for (const category in categories) {
+                    if (categories.hasOwnProperty(category)) {
+                        const catData = categories[category];
+                        // For count and amount elements, we need to match the HTML structure
+                        let elementIdPrefix;
+                        if (category === 'UPI Transfers') {
+                            elementIdPrefix = 'UPI_Transfers';
+                        } else if (category === 'ATM Deposits') {
+                            elementIdPrefix = 'ATM_Deposits';
+                        } else if (category === 'ATM Withdrawals') {
+                            elementIdPrefix = 'ATM_Withdrawals';
+                        } else if (category === 'Utility Bills') {
+                            elementIdPrefix = 'Utility_Bills';
+                        } else if (category === 'EMI/Loan Repayments') {
+                            elementIdPrefix = 'EMI_Loan_Repayments';
+                        } else if (category === 'NEFT/RTGS') {
+                            elementIdPrefix = 'NEFT_RTGS';
+                        } else {
+                            // For other categories, remove spaces
+                            elementIdPrefix = category.replace(/\s+/g, '');
+                        }
+                        
+                        const countElement = document.getElementById(elementIdPrefix + '-count');
+                        const amountElement = document.getElementById(elementIdPrefix + '-amount');
+                        
+                        if (countElement) {
+                            countElement.textContent = catData.count;
+                        }
+                        if (amountElement) {
+                            amountElement.textContent = '₹' + catData.total_amount.toFixed(2);
+                        }
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading category data:', error);
+        });
+}
+
+// Load transactions for a specific category
+function loadCategoryTransactions(category) {
+    // For transactions container, we need to match the HTML structure
+    let containerId;
+    if (category === 'EMI/Loan Repayments') {
+        containerId = 'EMI_Loan_Repayments-transactions';
+    } else if (category === 'NEFT/RTGS') {
+        containerId = 'NEFT_RTGS-transactions';
+    } else {
+        // For other categories, just append '-transactions'
+        containerId = category + '-transactions';
+    }
+    
+    const container = document.getElementById(containerId);
+    
+    console.log('Loading transactions for category:', category);
+    console.log('Container ID for DOM:', containerId);
+    console.log('Container element:', container);
+    
+    // Check if container exists
+    if (!container) {
+        console.error('Container not found for category:', category);
+        return;
+    }
+    
+    // Check if already loaded
+    if (container.querySelector('.transaction-table') || container.querySelector('.no-transactions')) {
+        console.log('Transactions already loaded for category:', category);
+        return;
+    }
+    
+    // Always show loading message when function is called
+    container.innerHTML = '<div class="loading">Loading transactions...</div>';
+    
+    // Properly encode the category name for the URL
+    const encodedCategory = encodeURIComponent(category);
+    
+    fetch(`/api/analysis-transactions/{{ analysis.id }}/${encodedCategory}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Received data for category:', category, data);
+            container.innerHTML = ''; // Clear loading message
+            
+            if (data.success && data.transactions && data.transactions.length > 0) {
+                // Create table for transactions
+                const table = document.createElement('table');
+                table.className = 'transaction-table';
+                table.innerHTML = `
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            ${data.transactions[0].balance !== undefined ? '<th>Balance</th>' : ''}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.transactions.map(transaction => `
+                            <tr>
+                                <td>${transaction.date || ''}</td>
+                                <td>${transaction.description || ''}</td>
+                                <td>₹${transaction.amount || '0.00'}</td>
+                                <td>${transaction.type || ''}</td>
+                                ${transaction.balance !== undefined ? `<td>₹${transaction.balance || '0.00'}</td>` : ''}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                `;
+                container.appendChild(table);
+            } else {
+                // Show no transactions message
+                const noTransactions = document.createElement('div');
+                noTransactions.className = 'no-transactions';
+                noTransactions.innerHTML = `
+                    <div class="no-transactions-icon">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <h4>No Transactions Found</h4>
+                    <p>There are no transactions in the "${category}" category.</p>
+                `;
+                container.appendChild(noTransactions);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading transactions for category:', category, error);
+            container.innerHTML = '<div class="error">Error loading transactions: ' + (error.message || 'Unknown error') + '</div>';
+        });
+}
+</script>
+
+<style>
+.bottom-tabs-section {
+    margin-top: 40px;
+    padding: 20px 0;
+}
+
+.tabs-container {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-light);
+    overflow: hidden;
+}
+
+.tabs-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--gray-light);
+    background: var(--gray-lightest);
+}
+
+.tabs-header h3 {
+    margin: 0 0 5px 0;
+    color: var(--dark);
+    font-size: 1.4rem;
+}
+
+.tabs-description {
+    margin: 0;
+    color: var(--gray);
+    font-size: 0.95rem;
+}
+
+.tabs-nav {
+    display: flex;
+    flex-wrap: wrap;
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-light);
+    padding: 0 10px;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--gray);
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--primary);
+    background: var(--gray-lightest);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: var(--gray-lightest);
+}
+
+.tabs-content {
+    padding: 25px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.category-summary {
+    margin-bottom: 25px;
+}
+
+.summary-card {
+    background: var(--gray-lightest);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    border-left: 4px solid var(--primary);
+}
+
+.summary-card h4 {
+    margin: 0 0 15px 0;
+    color: var(--dark);
+    font-size: 1.2rem;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.transactions-container {
+    min-height: 200px;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray);
+}
+
+.loading::after {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,.1);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.transaction-table th,
+.transaction-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.transaction-table th {
+    background: var(--gray-lightest);
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.transaction-table tbody tr:hover {
+    background: var(--gray-lightest);
+}
+
+.no-transactions {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray);
+}
+
+.no-transactions-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: var(--gray-light);
+}
+
+.no-transactions h4 {
+    margin: 0 0 10px 0;
+    color: var(--dark);
+    font-size: 1.3rem;
+}
+
+.no-transactions p {
+    margin: 0;
+    color: var(--gray);
+}
+
+.error {
+    color: var(--danger);
+    padding: 20px;
+    text-align: center;
+    background: var(--danger-light);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--danger);
+}
+
+@media (max-width: 768px) {
+    .tabs-nav {
+        padding: 0 5px;
+    }
+    
+    .tab-btn {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .tabs-content {
+        padding: 15px;
+    }
+    
+    .summary-stats {
+        gap: 20px;
+    }
+    
+    .stat-value {
+        font-size: 1.1rem;
+    }
+    
+    .transaction-table {
+        font-size: 0.9rem;
+    }
+    
+    .transaction-table th,
+    .transaction-table td {
+        padding: 8px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tabs-header {
+        padding: 15px 20px;
+    }
+    
+    .tabs-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .summary-card {
+        padding: 15px;
+    }
+    
+    .summary-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .stat-value {
+        font-size: 1.2rem;
+    }
+}
+</style>
+{% endblock %}

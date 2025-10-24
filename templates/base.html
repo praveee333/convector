@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Faws Tech Services Pvt Ltd - Your Trusted Partner in AI Solutions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Top Contact Info Row */
+        .top-contact {
+            background-color: #580b5b;
+            color: #fff;
+            padding: 6px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+            font-size: 13px;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+
+        /* Each contact item */
+        .top-contact span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        /* Links */
+        .top-contact a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .top-contact a:hover {
+            color: #00bcd4;
+        }
+
+        /* Mobile Responsive Design */
+        @media (max-width: 768px) {
+            .top-contact {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 12px;
+                font-size: 11px;
+                padding: 4px 8px;
+                justify-content: space-around;
+            }
+
+            .top-contact span {
+                justify-content: center;
+                gap: 4px;
+                flex: 0 1 auto;
+                min-width: 0;
+            }
+
+            .top-contact a {
+                font-size: 11px;
+                white-space: nowrap;
+            }
+        }
+
+        /* Extra Small Screens (Mobile Portrait) */
+        @media (max-width: 480px) {
+            .top-contact {
+                font-size: 10px;
+                gap: 8px;
+                padding: 3px 5px;
+            }
+
+            .top-contact a {
+                font-size: 10px;
+            }
+            
+            .top-contact span {
+                gap: 3px;
+            }
+        }
+
+        /* Very Small Screens (≤ 320px) */
+        @media (max-width: 320px) {
+            .top-contact {
+                font-size: 9px;
+                gap: 6px;
+                padding: 2px 4px;
+            }
+
+            .top-contact a {
+                font-size: 9px;
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 8px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* User actions in top right */
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-login, .btn-register {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login {
+            background: transparent;
+            border: 2px solid #580b5b;
+            color: #580b5b;
+        }
+
+        .btn-login:hover {
+            background: #580b5b;
+            color: white;
+        }
+
+        .btn-register {
+            background: #580b5b;
+            border: 2px solid #580b5b;
+            color: white;
+        }
+
+        .btn-register:hover {
+            background: #7a1cd8;
+            border-color: #7a1cd8;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+        }
+
+        .btn-admin {
+            padding: 8px 16px;
+            background: #580b5b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-admin:hover {
+            background: #7a1cd8;
+        }
+
+        /* Simplified Professional Hamburger Button Design */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            background: transparent;
+            border: none;
+            transition: all 0.3s ease;
+            position: relative;
+            width: 44px;
+            height: 44px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hamburger:hover {
+            background: rgba(88, 11, 91, 0.1);
+            transform: scale(1.05);
+        }
+
+        .hamburger:active {
+            transform: scale(0.95);
+        }
+
+        /* Professional Bar Styling */
+        .bar {
+            height: 3px;
+            width: 24px;
+            background: linear-gradient(135deg, #580b5b, #7a1cd8);
+            border-radius: 3px;
+            margin: 3px 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            transform-origin: center;
+        }
+
+        /* Simplified Active Animation */
+        .hamburger.active .bar:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .hamburger.active .bar:nth-child(2) {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .hamburger.active .bar:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .hamburger.active {
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        /* Simplified Overlay */
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 9998;
+            pointer-events: none;
+        }
+
+        .nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Desktop Navigation Menu */
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            position: relative;
+            padding: 6px 0;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #580b5b;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: #580b5b;
+        }
+
+        /* Simplified Mobile Navigation */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 320px;
+                height: 100vh;
+                background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+                display: flex;
+                flex-direction: column;
+                padding: 100px 0 30px;
+                gap: 0;
+                transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                z-index: 9999;
+                overflow-y: auto;
+                border-left: 3px solid #580b5b;
+                pointer-events: auto;
+            }
+
+            .nav-menu.active {
+                right: 0;
+                pointer-events: auto;
+            }
+
+            .nav-menu a.nav-link {
+                display: block;
+                width: 100%;
+                padding: 18px 30px;
+                margin: 0;
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #2c3e50;
+                text-decoration: none;
+                background: transparent;
+                border-bottom: 1px solid rgba(88, 11, 91, 0.1);
+                position: relative;
+                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transform: translateX(0);
+                opacity: 1;
+                pointer-events: auto;
+                visibility: visible;
+                height: auto;
+                min-height: 56px;
+                flex-shrink: 0;
+            }
+
+            .nav-menu a.nav-link:hover {
+                background: linear-gradient(135deg, rgba(88, 11, 91, 0.1), rgba(122, 28, 216, 0.05));
+                color: #580b5b;
+                transform: translateX(10px);
+                padding-left: 40px;
+            }
+
+            .nav-menu a.nav-link::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 4px;
+                height: 100%;
+                background: linear-gradient(180deg, #580b5b, #7a1cd8);
+                transform: scaleY(0);
+                transition: transform 0.3s ease;
+                transform-origin: bottom;
+            }
+
+            .nav-menu a.nav-link:hover::before {
+                transform: scaleY(1);
+            }
+
+            .nav-menu a.nav-link:last-child {
+                border-bottom: none;
+            }
+
+            .hamburger {
+                display: flex !important;
+            }
+
+            .navbar {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(88, 11, 91, 0.1);
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        /* Hamburger Animation */
+        .hamburger.active .bar:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.active .bar:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active .bar:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #222;
+            color: #fff;
+            padding: 25px 15px;
+            margin-top: 40px;
+        }
+
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .footer-section h3,
+        .footer-section h4 {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .footer-section a {
+            color: #bbb;
+            display: block;
+            margin-bottom: 5px;
+            text-decoration: none;
+        }
+
+        .footer-section a:hover {
+            color: #fff;
+        }
+
+        .social-links a {
+            margin-right: 10px;
+            color: #fff;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #007bff;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 8px;
+            border-top: 1px solid #444;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        
+        /* Mobile Footer Optimizations */
+        @media (max-width: 768px) {
+            .footer {
+                padding: 20px 10px;
+                margin-top: 30px;
+            }
+            
+            .footer-container {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 12px;
+            }
+            
+            .footer-section h3,
+            .footer-section h4 {
+                font-size: 1rem;
+                margin-bottom: 6px;
+            }
+            
+            .footer-section a {
+                font-size: 0.9rem;
+                margin-bottom: 4px;
+            }
+            
+            .footer-bottom {
+                font-size: 12px;
+                padding-top: 6px;
+                margin-top: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .footer {
+                padding: 15px 8px;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .footer-section h3,
+            .footer-section h4 {
+                font-size: 0.95rem;
+            }
+            
+            .footer-section a {
+                font-size: 0.85rem;
+            }
+            
+            .footer-bottom {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 6px 10px;
+            }
+            
+            .nav-container {
+                padding: 8px 0;
+            }
+            
+            .navbar .nav-logo span {
+                font-size: 11px;
+                line-height: 1.2;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 4px 8px;
+            }
+            
+            .navbar .nav-logo span {
+                font-size: 10px;
+            }
+        }
+        
+        @media (max-width: 320px) {
+            .navbar {
+                padding: 3px 5px;
+            }
+            
+            .navbar .nav-logo span {
+                font-size: 9px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Top Contact Row -->
+    <div class="top-contact">
+        <span><i class="fas fa-phone"></i> <a href="tel:+916380213834">+91 63802 13834</a></span>
+        <span><i class="fas fa-phone"></i> <a href="tel:+917397198134">+91 73971 98134</a></span>
+        <span><i class="fas fa-envelope"></i> <a href="mailto:efawstech@gmail.com">efawstech@gmail.com</a></span>
+        <span><i class="fas fa-map-marker-alt"></i> <a href="https://share.google/s21SUGSK7KXyG0srq" target="_blank">Coimbatore | Bangalore</a></span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="{{ url_for('index') }}">
+                    <span>E-Faws Tech Services<br><small>Your Trusted Partner in AI Solutions</small></span>
+                </a>
+            </div>
+            
+            <div class="user-actions">
+                {% if session.user_id %}
+                    <div class="user-info">
+                        <span class="user-name">Welcome, {{ user_name if user_name else 'User' }}</span>
+                      
+                         <a href="{{ url_for('logout') }}" class="btn-logout" onclick="confirmLogout(event)">Logout</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-login">Login</a>
+                    <a href="{{ url_for('login') }}#register" class="btn-register">Register</a>
+                {% endif %}
+            </div>
+            
+            <button class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="margin-top:20px;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <center><footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>E-Faws Tech Services Pvt Ltd</h3>
+                <p>Your Trusted Partner in AI Solutions</p>
+                <p>AI for Everyone -- From Small Shops to Big Brands</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('bank_statement_analyzer') }}">Bank Statement Analyzer</a>
+                <a href="{{ url_for('bank_statement_history') }}">Analysis History</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contact Info</h4>
+                <span><a href="tel:+916380213834"><i class="fas fa-phone"></i> +91 63802 13834</a></span>
+                <span><a href="tel:+917397198134"><i class="fas fa-phone"></i> +91 73971 98134</a></span>
+
+                <span><a href="mailto:efawstech@gmail.com"><i class="fas fa-envelope"> </i>
+                        efawstech@gmail.com</a></span>
+                <span><a href="https://share.google/s21SUGSK7KXyG0srq" target="_blank"><i
+                            class="fas fa-map-marker-alt"></i> Coimbatore | Bangalore</a></span>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/company/e-faws-tech-services-private-limited/?viewAsMember=true"
+                        target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.youtube.com/@efawstech" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/efawstech/" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61562217991197" target="_blank"><i
+                            class="fab fa-facebook"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 E-Faws Tech Services Pvt Ltd. All rights reserved.</p>
+        </div>
+    </footer></center>
+
+    <!-- JavaScript -->
+    <script>
+        // Note: Hamburger menu functionality is handled by the SPA router system
+        // See index.html for the main implementation
+        
+        console.log('Base template loaded - navigation handled by SPA system');
+
+        function confirmLogout(event) {
+    event.preventDefault(); // Prevent the default link behavior
+    if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '/logout';
+    }
+}
+    </script>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
+</body>
+
+</html>

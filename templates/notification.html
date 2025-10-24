@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .notification-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .notification-header h1 {
+            color: #580b5b;
+            font-size: 2rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .back-button {
+            background: #580b5b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background: #420844;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .notification-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button.active {
+            color: #580b5b;
+            border-bottom: 3px solid #580b5b;
+            font-weight: 600;
+        }
+
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .notification-details {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .notification-contact {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+        }
+
+        .notification-contact span {
+            background: #e9ecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .notification-meta {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .notification-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-left: 15px;
+        }
+
+        .star-notification {
+            background: #f8f9fa;
+            color: #666;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .star-notification.starred {
+            background: #ffc107;
+            color: white;
+        }
+
+        .delete-notification {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .delete-notification:hover {
+            background: #c82333;
+        }
+
+        .mark-read, .mark-unread {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .mark-read:hover, .mark-unread:hover {
+            background: #138496;
+        }
+
+        .read-status, .unread-status {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .read-status {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .unread-status {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .clear-all-container {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .clear-all {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .clear-all:hover {
+            background: #5a6268;
+        }
+
+        .no-notifications {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .no-notifications i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .no-notifications h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Notification types */
+        .notification-item.expiring {
+            border-left: 4px solid #ffc107;
+        }
+
+        .notification-item.new-user {
+            border-left: 4px solid #17a2b8;
+        }
+
+        .notification-item.new-subscription {
+            border-left: 4px solid #28a745;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .notification-list-modal {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .notification-item-modal {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .notification-item-modal:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .notification-container {
+                padding: 10px;
+            }
+            
+            .notification-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .notification-item {
+                flex-direction: column;
+            }
+            
+            .notification-actions {
+                margin: 15px 0 0 0;
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+            
+            .notification-contact {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification-container">
+        <div class="notification-header">
+            <h1>Notifications</h1>
+            <div class="header-actions">
+                <button class="clear-all" onclick="cleanupOutdatedNotifications()">
+                    <i class="fas fa-broom"></i> Cleanup Outdated
+                </button>
+                <a href="/admin-dashboard" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <div class="notification-panel">
+            <div class="panel-header">
+                <h2>Recent Notifications</h2>
+                <div class="filter-controls">
+                    <select id="readFilter" class="filter-select" onchange="applyFilters()">
+                        <option value="all">All Notifications</option>
+                        <option value="read">Read Only</option>
+                        <option value="unread">Unread Only</option>
+                    </select>
+                </div>
+            </div>
+            <div class="notification-tabs">
+                <button class="tab-button active" data-tab="all">All Notifications</button>
+                <button class="tab-button" data-tab="new-user">New Registrations</button>
+                <button class="tab-button" data-tab="new-subscription">New Subscriptions</button>
+                <button class="tab-button" data-tab="expiring">Expiring Subscriptions</button>
+                <button class="tab-button" data-tab="starred">Starred</button>
+            </div>
+            <ul id="notificationList" class="notification-list">
+                <!-- Notifications will be populated here -->
+            </ul>
+            <div class="clear-all-container">
+                <button class="clear-all" onclick="clearAllNotifications()">
+                    <i class="fas fa-trash"></i> Clear All Notifications
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for showing cleaned up notifications -->
+    <div id="cleanupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cleaned Up Notifications</h2>
+                <span class="close" onclick="closeCleanupModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="cleanupResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current active tab and filters
+        let currentTab = 'all';
+        let readFilter = 'all';
+
+        // Load notifications from backend when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifications();
+            
+            // Add event listeners to tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active tab
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Set current tab and reload notifications
+                    currentTab = this.getAttribute('data-tab');
+                    loadNotifications();
+                });
+            });
+        });
+
+        // Apply filters
+        function applyFilters() {
+            readFilter = document.getElementById('readFilter').value;
+            loadNotifications();
+        }
+
+        // Load notifications from backend
+        function loadNotifications() {
+            fetch('/admin/notifications')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayNotifications(data.notifications);
+                    } else {
+                        console.error('Error loading notifications:', data.error);
+                        showNoNotifications();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                    showNoNotifications();
+                });
+        }
+
+        // Display notifications in the panel
+        function displayNotifications(notifications) {
+            const notificationList = document.getElementById('notificationList');
+            notificationList.innerHTML = '';
+            
+            // Filter notifications based on current tab
+            let filteredNotifications = notifications;
+            if (currentTab !== 'all') {
+                if (currentTab === 'starred') {
+                    filteredNotifications = notifications.filter(n => n.starred);
+                } else {
+                    filteredNotifications = notifications.filter(n => n.type === currentTab);
+                }
+            }
+            
+            // Apply read/unread filter
+            if (readFilter === 'read') {
+                filteredNotifications = filteredNotifications.filter(n => n.is_read);
+            } else if (readFilter === 'unread') {
+                filteredNotifications = filteredNotifications.filter(n => !n.is_read);
+            }
+            
+            if (filteredNotifications.length === 0) {
+                showNoNotifications();
+                return;
+            }
+            
+            filteredNotifications.forEach(function(notification) {
+                const item = document.createElement('li');
+                item.className = 'notification-item ' + notification.type;
+                
+                // Format the date
+                const createdAt = new Date(notification.created_at);
+                const formattedDate = createdAt.toLocaleString();
+                
+                // Determine if notification is starred
+                const starredClass = notification.starred ? 'starred' : '';
+                const starText = notification.starred ? 'Unstar' : 'Star';
+                
+                item.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-title">${notification.title}</div>
+                        <div class="notification-details">${notification.message}</div>
+                        <div class="notification-contact">
+                            <span><i class="fas fa-user"></i> ${notification.user_name}</span>
+                            <span><i class="fas fa-envelope"></i> ${notification.user_email}</span>
+                            <span><i class="fas fa-phone"></i> ${notification.user_phone}</span>
+                        </div>
+                        <div class="notification-meta">
+                            <i class="far fa-clock"></i> ${formattedDate}
+                            ${notification.is_read ? '<span class="read-status">Read</span>' : '<span class="unread-status">Unread</span>'}
+                        </div>
+                    </div>
+                    <div class="notification-actions">
+                        ${notification.is_read ? 
+                            `<button class="mark-unread" onclick="markAsUnread(${notification.id})">
+                                <i class="fas fa-envelope"></i> Mark Unread
+                            </button>` : 
+                            `<button class="mark-read" onclick="markAsRead(${notification.id})">
+                                <i class="fas fa-envelope-open"></i> Mark Read
+                            </button>`}
+                        <button class="star-notification ${starredClass}" onclick="starNotification(${notification.id})">
+                            <i class="fas fa-star"></i> ${starText}
+                        </button>
+                        <button class="delete-notification" onclick="deleteNotification(${notification.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                `;
+                notificationList.appendChild(item);
+            });
+        }
+
+        // Show "no notifications" message
+        function showNoNotifications() {
+            const notificationList = document.getElementById('notificationList');
+            let message = "You're all caught up! There are no new notifications.";
+            
+            if (currentTab !== 'all') {
+                message = `No notifications found for the "${currentTab}" filter.`;
+            }
+            
+            if (readFilter !== 'all') {
+                const readStatus = readFilter === 'read' ? 'read' : 'unread';
+                message = `No ${readStatus} notifications found.`;
+            }
+            
+            notificationList.innerHTML = `
+                <div class="no-notifications">
+                    <i class="fas fa-bell-slash"></i>
+                    <h3>No Notifications</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Star/unstar a notification
+        function starNotification(notificationId) {
+            fetch(`/admin/notifications/star/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh the notification list
+                    loadNotifications();
+                } else {
+                    console.error('Error starring notification:', data.error);
+                    alert('Error starring notification: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error starring notification:', error);
+                alert('Error starring notification');
+            });
+        }
+
+        // Mark a notification as read
+        function markAsRead(notificationId) {
+            fetch(`/admin/notifications/mark-as-read/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh the notification list
+                    loadNotifications();
+                } else {
+                    console.error('Error marking notification as read:', data.error);
+                    alert('Error marking notification as read: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+                alert('Error marking notification as read');
+            });
+        }
+
+        // Mark a notification as unread
+        function markAsUnread(notificationId) {
+            fetch(`/admin/notifications/mark-as-unread/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh the notification list
+                    loadNotifications();
+                } else {
+                    console.error('Error marking notification as unread:', data.error);
+                    alert('Error marking notification as unread: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notification as unread:', error);
+                alert('Error marking notification as unread');
+            });
+        }
+
+        // Delete a specific notification
+        function deleteNotification(notificationId) {
+            if (confirm('Are you sure you want to delete this notification?')) {
+                fetch(`/admin/notifications/delete/${notificationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Refresh the notification list
+                        loadNotifications();
+                    } else {
+                        console.error('Error deleting notification:', data.error);
+                        alert('Error deleting notification: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting notification:', error);
+                    alert('Error deleting notification');
+                });
+            }
+        }
+
+        // Clear all notifications
+        function clearAllNotifications() {
+            if (confirm('Are you sure you want to clear all notifications?')) {
+                fetch('/admin/notifications/clear-all', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Refresh the notification list
+                        loadNotifications();
+                    } else {
+                        console.error('Error clearing notifications:', data.error);
+                        alert('Error clearing notifications: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error clearing notifications:', error);
+                    alert('Error clearing notifications');
+                });
+            }
+        }
+
+        // Cleanup outdated notifications
+        function cleanupOutdatedNotifications() {
+            if (confirm('Are you sure you want to cleanup outdated notifications?')) {
+                fetch('/admin/cleanup-notifications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show results in modal
+                        showCleanupResults(data);
+                        // Reload the notifications
+                        loadNotifications();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while cleaning up notifications');
+                });
+            }
+        }
+
+        // Show cleanup results in modal
+        function showCleanupResults(data) {
+            const modal = document.getElementById('cleanupModal');
+            const resultsDiv = document.getElementById('cleanupResults');
+            
+            if (data.cleaned_notifications && data.cleaned_notifications.length > 0) {
+                let html = `<p>Successfully cleaned up ${data.cleaned_notifications.length} outdated notification(s):</p>`;
+                html += '<ul class="notification-list-modal">';
+                
+                data.cleaned_notifications.forEach(notification => {
+                    html += `
+                        <li class="notification-item-modal">
+                            <strong>${notification.title}</strong><br>
+                            ${notification.message}<br>
+                            <small>User: ${notification.user_name} (${notification.user_email})</small>
+                        </li>
+                    `;
+                });
+                
+                html += '</ul>';
+                resultsDiv.innerHTML = html;
+            } else {
+                resultsDiv.innerHTML = '<p>No outdated notifications found.</p>';
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        // Close cleanup modal
+        function closeCleanupModal() {
+            document.getElementById('cleanupModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('cleanupModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
