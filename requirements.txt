@@ -5,11 +5,11 @@ pandas
 python-docx
 Pillow
 pytesseract
-numpy3
+numpy
 mysql-connector-python
 razorpay
 flask-cors
-alembic4
+alembic
 gunicorn
 reportlab
 python-dotenv
