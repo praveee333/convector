@@ -1419,12 +1419,9 @@ def create_enhanced_analytics_dashboard(writer, categories, total_credit, total_
         
 @app.route('/')
 def index():
-    # If user is logged in and has active subscription, go to analyzer
-    if is_logged_in() and has_active_subscription(session['user_id']):
-        user_name = get_user_name(session['user_id'])
-        return redirect(url_for('bank_statement_analyzer'))
-    # Otherwise go to login page
-    return redirect(url_for('login'))
+    # Always go to the index page
+    user_name = get_user_name(session['user_id']) if is_logged_in() else None
+    return render_template('index.html', user_name=user_name)
 
 @app.route('/login')
 def login():
