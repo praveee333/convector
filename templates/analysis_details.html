@@ -770,7 +770,12 @@ function loadCategoryTransactions(category) {
         })
         .catch(error => {
             console.error('Error loading transactions for category:', category, error);
-            container.innerHTML = '<div class="error">Error loading transactions: ' + (error.message || 'Unknown error') + '</div>';
+            // Check if the error is due to receiving HTML instead of JSON
+            if (error instanceof SyntaxError && error.message.includes('Unexpected token')) {
+                container.innerHTML = '<div class="error">Error loading transactions: Server returned an invalid response. This category may not have any transactions.</div>';
+            } else {
+                container.innerHTML = '<div class="error">Error loading transactions: ' + (error.message || 'Unknown error') + '</div>';
+            }
         });
 }
 </script>
